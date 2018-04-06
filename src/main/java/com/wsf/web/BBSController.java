@@ -1,8 +1,10 @@
 package com.wsf.web;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import com.wsf.entity.PostHead;
 import com.wsf.entity.User;
 import com.wsf.service.PostHeadService;
 import com.wsf.service.UserService;
+import com.wsf.util.ImageUploadUtil;
 import com.wsf.util.Tool;
 
 
@@ -74,6 +77,35 @@ public class BBSController {
 		
 		return "home";
 	}
+	
+	
+	@RequestMapping(value={"/img/upload"},
+			method={RequestMethod.GET,RequestMethod.POST})
+	public void imgUpload(
+			Model model,
+			HttpServletRequest request,
+			HttpServletResponse response
+			){
+		
+		String DirectoryName = "/upload"; 
+        try {
+        	System.out.println("ImgUpload");
+            ImageUploadUtil.ckeditor(request, response, DirectoryName);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@RequestMapping(value={"/","/index.html","/index"},
 			method={RequestMethod.GET,RequestMethod.POST})

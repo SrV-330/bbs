@@ -59,6 +59,19 @@
 	          <mvc:mapping path="/admin/**"/>
 	          <bean class="com.wsf.interceptor.AdminInterceptor"/>
 	      </mvc:interceptor>
+	      
+	      <mvc:interceptor>
+	          <mvc:mapping path="/home/**"/>
+	          <bean class="com.wsf.interceptor.HomeInterceptor"/>
+	      </mvc:interceptor>
+	      <mvc:interceptor>
+	          <mvc:mapping path="/posthead/**"/>
+	          <bean class="com.wsf.interceptor.HomeInterceptor"/>
+	      </mvc:interceptor>
+	      <mvc:interceptor>
+	          <mvc:mapping path="/post/**"/>
+	          <bean class="com.wsf.interceptor.HomeInterceptor"/>
+	      </mvc:interceptor>
   		</mvc:interceptors>
          
          

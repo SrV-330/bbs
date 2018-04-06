@@ -24,7 +24,7 @@
 <script src="/bbs/js/_messenger.js"></script>
 
 <script src="/bbs/js/_comment.js"></script>
-<script src="//cdn.ckeditor.com/4.8.0/standard/ckeditor.js"></script>
+<script src="/bbs/js/ckeditor_4.4.6_standard/ckeditor/ckeditor.js"></script>
 <script src="/bbs/js/_edt.js"></script>
 </head>
 <script>
@@ -278,6 +278,30 @@ background-color: rgba(0, 132, 255, 0.1);
     margin-bottom: 0px;
     margin-left: auto;
 }
+
+.GlobalSideBar-navList {
+    width: 100%;
+    padding: 8px 0;
+    padding-top: 8px;
+    padding-right: 0px;
+    padding-bottom: 8px;
+    padding-left: 0px;
+}
+.right-title{
+	padding-top:4px;
+	padding-right: 10px;
+	padding-bottom: 4px;
+	padding-left: 10px;
+	font-size:20px;
+}
+.right-item{
+	padding-top:2px;
+	padding-right: 10px;
+	padding-bottom: 2px;
+	padding-left: 10px;
+	font-size:14px;
+}
+
 </style>
 <script>
 $(function(){
@@ -295,6 +319,11 @@ $(function(){
 <input id="userType" type="hidden" value="${user.userType }"/>
 <input id="uid" type="hidden" value="${user.uid }"/>
 <div class="container">
+	<div class="container">
+	
+	<div class="col-md-7 col-lg-7
+	 col-md-offset-1 col-lg-offset-1">
+	
 	<div class="Card TopstoryItem">
 	<c:set var="phd" value="${requestScope.PostHead }"/>
 			<div class="">
@@ -324,7 +353,7 @@ $(function(){
 				 </h3>
 			</div>
 			<div class="">
-				 <div id="simple" class="postHeadSimple">${phd.headSimple}</div>
+				 <div id="simple" class="postHeadSimple">${phd.headDetail}</div>
 			</div>		
 			<c:if test="${user!=null }">	
 			<div class="">
@@ -514,8 +543,45 @@ $(function(){
 	</div>
 	</div>
 	
+	</div>
+	
+	
+	<div class="col-md-3 col-lg-3 ">
+	
+		<div class="Card ">
+					<ul class="GlobalSideBar-navList ">
+					<li class="right-title"><span><b>热帖</b></span></li>
+					<c:forEach var="hphd" items="${requestScope.HotPostHeadList }">
+						<li class="right-item">
+							<span class="glyphicon glyphicon-fire" style="color:red"></span>
+								<a href="<c:url value='/post/postdetail/${hphd.hdid }'/>">${hphd.headTitle }</a>
+							
+						</li>
+					</c:forEach>
+					
+					</ul>
+				</div>
+				<div class="Card ">
+					<ul class="GlobalSideBar-navList ">
+					<li class="right-title"><span><b>置顶帖</b></span></li>
+					<c:forEach var="tphd" items="${requestScope.TopPostHeadList }">
+						<li class="right-item">
+							<span class="glyphicon glyphicon-arrow-up" style="color:blue"></span>
+								<a href="<c:url value='/post/postdetail/${tphd.hdid }'/>">${tphd.headTitle }</a>
+							
+						</li>
+					</c:forEach>
+					
+					</ul>
+				</div>
+	
+	
+	</div>	
+	
+	</div>
 	
 	<%@include file="_page.jsp" %>
+	
 	
 	<div class="container">
 	<div class="container">

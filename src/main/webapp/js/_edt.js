@@ -22,9 +22,15 @@ $(function(){
 		   ];
 		 
 		   // 图片上传相关
-		   config.filebrowserImageUploadUrl = '/bbs/img'; // 图片上传路径
+		   
+		   
+		   
+		   config.filebrowserImageUploadUrl = '/img/upload'; // 图片上传路径
 		   config.image_previewText = ' '; // 图片信息面板预览区内容的文字内容，默认显示CKEditor自带的内容
-		   config.removeDialogTabs = 'image:advanced;image:Link'; // 移除图片上传页面的'高级','链接'页签
+		   config.removeDialogTabs = 'image:advanced;image:Link;link:advanced'; // 移除图片上传页面的'高级','链接'页签
+		   
+		   
+		   
 		 }
 	
 	
@@ -33,12 +39,15 @@ $(function(){
 		   var title=$(".input-title").val();
 		   var content=CKEDITOR.instances.editor.getData();
 		   var simple=content;
+		   simple=simple.replace(/<img[^>]*src[=\"\'\s]+[^\.]*\/([^\.]+)\.[^\"\']+[\"\']?[^>]*>/,
+				   "[图片]");
+		   alert(simple);
 		   simple = simple.replace(/(\n)/g, "");  
 		   simple = simple.replace(/(\t)/g, "");  
 		   simple = simple.replace(/(\r)/g, "");  
 		   simple = simple.replace(/<\/?[^>]*>/g, "");  
 		   simple = simple.replace(/\s*/g, "");
-		   
+		   alert(simple);
 		   
 		   
 		   $.ajax({
