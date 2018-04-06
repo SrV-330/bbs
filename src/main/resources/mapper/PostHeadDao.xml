@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wsf.dao.PostHeadDao">
+	<resultMap type="com.wsf.entity.PostHead" id="PostHeadResult">
+        <id column="HDID" jdbcType="INTEGER" property="hdid"/>
+        <result column="HEADTITLE" jdbcType="VARCHAR" property="headTitle"/>
+        <result column="HEADSIMPLE" jdbcType="VARCHAR" property="headSimple"/>
+        <result column="HEADDETAIL" jdbcType="NVARCHAR" property="headDetail"/>
+        <result column="POSTTIME" jdbcType="VARCHAR" property="postTime"/>
+        <result column="ISTOP" jdbcType="INTEGER" property="isTop"/>
+        <result column="ISGOOD" jdbcType="INTEGER" property="isGood"/>
+        <result column="ISDEL" jdbcType="INTEGER" property="isDel"/>
+        <result column="ISLOCK" jdbcType="INTEGER" property="isLock"/>
+        <association column="LZID" property="lz" javaType="com.wsf.entity.User" select="com.wsf.dao.UserDao.queryById"/>
+    </resultMap>
+    <sql id="cols">
+        HDID,
+       	HEADTITLE,
+       	HEADSIMPLE,
+       	HEADDETAIL,
+       	LZID,
+       	POSTTIME,
+       	ISTOP,
+       	ISGOOD,
+       	ISDEL,
+       	ISLOCK 
+    </sql>
+    <select id="query" parameterType="com.wsf.entity.PostHead" resultMap="PostHeadResult">
+        SELECT 
+        	HDID,
+       		HEADTITLE,
+       		HEADSIMPLE,
+       		HEADDETAIL,
+       		LZID,
+       		POSTTIME,
+       		ISTOP,
+       		ISGOOD,
+       		ISDEL,
+       		ISLOCK,
+        	UID,
+        	USERNAME,
+        	USERPWD,
+        	USERTYPE,
+        	REGTIME,
+        	ISGAG
+        FROM POSTHEAD JOIN USER 
+        ON LZID=UID
+        <where>
+            <if test="hd.hdid!=0">
+                AND HDID=#{hd.hdid}
+            </if>
+            <if test="hd.headTitle!=null and !&quot;&quot;.equals(hd.headTitle.trim())">
+                AND HEADTITLE LIKE '%' #{hd.headTitle} '%'
+            </if>
+            <if test="hd.headSimple!=null and !&quot;&quot;.equals(hd.headSimple.trim())">
+                AND HEADSIMPLE LIKE '%' #{hd.headSimple} '%'
+            </if>
+            <if test="hd.headDetail!=null and !&quot;&quot;.equals(hd.headDetail.trim())">
+                AND HEADDETAIL LIKE '%' #{hd.headDetail} '%'
+            </if>
+            <if test="hd.lz!=null and hd.lz.uid!=0 and hd.lz.userName!=null and !&quot;&quot;.equals(hd.lz.userName.trim())">
+                AND USERNAME LIKE '%' #{hd.lz.userName} '%'
+            </if>
+            <if test="hd.postTime!=null and !&quot;&quot;.equals(hd.postTime)">
+                AND POSTTIME LIKE '%' #{hd.postTime} '%'
+            </if>
+            <if test="hd.isTop!=0">
+                AND ISTOP=#{hd.isTop}
+            </if>
+            <if test="hd.isGood!=0">
+                AND ISGOOD=#{hd.isGood}
+            </if>
+            <if test="hd.isDel!=0">
+                AND ISDEL=#{hd.isDel}
+            </if>
+            <if test="hd.isLock!=0">
+                AND ISLOCK=#{hd.isLock}
+            </if>
+        </where>
+    </select>
+    <select id="queryById" parameterType="long" resultMap="PostHeadResult">
+        SELECT 
+        	<include refid="cols"/>
+        FROM POSTHEAD
+        WHERE HDID = #{id} 
+    </select>
+    <insert id="insert" parameterType="com.wsf.entity.PostHead">
+        INSERT INTO POSTHEAD(
+        	HEADTITLE,
+        	HEADSIMPLE,
+        	HEADDETAIL,
+        	LZID,
+        	POSTTIME,
+        	ISTOP,
+        	ISGOOD,
+        	ISDEL,
+        	ISLOCK 
+        ) VALUES(
+        	#{hd.headTitle},
+        	#{hd.headSimple},
+        	#{hd.headDetail},
+        	#{hd.lz.uid},
+        	#{hd.postTime},
+        	#{hd.isTop},
+        	#{hd.isGood},
+        	#{hd.isDel},
+        	#{hd.isLock}
+        )
+    </insert>
+    <select id="queryByPage" resultMap="PostHeadResult">
+        SELECT 
+        	<include refid="cols"/>
+        FROM POSTHEAD
+        WHERE ISDEL=1 
+        
+        ORDER BY ISTOP DESC,POSTTIME DESC 
+        LIMIT #{limit},#{offset}
+    </select>
+    <select id="queryByPageByPostHead" resultMap="PostHeadResult">
+        SELECT 
+        	<include refid="cols"/>
+        FROM POSTHEAD
+        <where>
+            <if test="hd.lz!=null and hd.lz.uid!=0">
+                AND LZID=#{hd.lz.uid}
+            </if>
+            
+            <if test="hd.headTitle!=null and !&quot;&quot;.equals(hd.headTitle.trim())">
+               AND HEADTITLE LIKE '%' {hd.headTitle} '%'
+            </if>
+            <if test="hd.headSimple!=null and !&quot;&quot;.equals(hd.headSimple.trim())">
+               AND HEADSIMPLE LIKE '%' #{hd.headSimple} '%'
+                
+            </if>
+            <if test="hd.headDetail!=null and !&quot;&quot;.equals(hd.headDetail.trim())">
+               AND HEADDETAIL LIKE '%' #{hd.headDetail} '%'
+            </if>
+            <if test="hd.isTop!=0">
+               AND ISTOP = #{hd.isTop}
+            </if>
+            <if test="hd.isGood!=0">
+               AND ISGOOD = #{hd.isGood}
+            </if>
+            <if test="hd.isDel!=0">
+               AND ISDEL = #{hd.isDel}
+            </if>
+            <if test="hd.isLock!=0">
+               AND ISLOCK = #{hd.isLock}
+            </if>
+            
+        </where>
+        
+        ORDER BY ISTOP DESC,POSTTIME DESC 
+        LIMIT #{limit},#{offset}
+    </select>
+    
+    
+    <select id="count" parameterType="com.wsf.entity.PostHead" resultType="long">
+        SELECT COUNT(*) FROM POSTHEAD 
+
+		<where>
+		    <if test="hd.lz!=null and hd.lz.uid!=0">
+                AND LZID=#{hd.lz.uid}
+            </if>
+            <if test="hd.headTitle!=null and !&quot;&quot;.equals(hd.headTitle.trim())">
+               AND HEADTITLE LIKE '%' #{hd.headTitle} '%'
+            </if>
+            <if test="hd.headSimple!=null and !&quot;&quot;.equals(hd.headSimple.trim())">
+               AND HEADSIMPLE LIKE '%' #{hd.headSimple} '%'
+                
+            </if>
+            <if test="hd.headDetail!=null and !&quot;&quot;.equals(hd.headDetail.trim())">
+               AND HEADDETAIL LIKE '%' #{hd.headDetail} '%'
+            </if>
+            <if test="hd.isTop!=0">
+               AND ISTOP = #{hd.isTop}
+            </if>
+            <if test="hd.isGood!=0">
+               AND ISGOOD = #{hd.isGood}
+            </if>
+            <if test="hd.isDel!=0">
+               AND ISDEL = #{hd.isDel}
+            </if>
+            <if test="hd.isLock!=0">
+               AND ISLOCK = #{hd.isLock}
+            </if>
+            
+        </where>
+
+		
+    </select>
+    <update id="update">
+        UPDATE POSTHEAD 
+        <set>
+            <if test="hd.headTitle!=null and !&quot;&quot;.equals(hd.headTitle.trim())">
+                HEADTITLE = #{hd.headTitle},
+            </if>
+            <if test="hd.headSimple!=null and !&quot;&quot;.equals(hd.headSimple.trim())">
+                HEADSIMPLE = #{hd.headSimple},
+            </if>
+            <if test="hd.headDetail!=null and !&quot;&quot;.equals(hd.headDetail.trim())">
+                HEADDETAIL = #{hd.headDetail},
+            </if>
+            <if test="hd.isTop!=0">
+                ISTOP = #{hd.isTop},
+            </if>
+            <if test="hd.isGood!=0">
+                ISGOOD = #{hd.isGood},
+            </if>
+            <if test="hd.isDel!=0">
+                ISDEL = #{hd.isDel},
+            </if>
+            <if test="hd.isLock!=0">
+                ISLOCK = #{hd.isLock},
+            </if>
+        </set>
+        WHERE HDID=#{hd.hdid}
+    </update>
+    
+</mapper>

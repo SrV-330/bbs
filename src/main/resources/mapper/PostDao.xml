@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wsf.dao.PostDao">
+    <resultMap type="com.wsf.entity.Post" id="PostResult">
+        <id column="PID" jdbcType="INTEGER" property="pid"/>
+        <result column="POSTCONTENT" jdbcType="NVARCHAR" property="postContent"/>
+        <result column="POSTTIME" jdbcType="VARCHAR" property="postTime"/>
+        <result column="POSTTYPE" jdbcType="INTEGER" property="postType"/>
+        <result column="ZAN" jdbcType="INTEGER" property="zan"/>
+        <result column="ISDEL" jdbcType="INTEGER" property="isDel"/>
+        <association column="HDID" property="hd" javaType="com.wsf.entity.PostHead" select="com.wsf.dao.PostHeadDao.queryById"/>
+        <association column="CID" property="c" javaType="com.wsf.entity.Post" select="com.wsf.dao.PostDao.queryById"/>
+        <association column="CZID" property="cz" javaType="com.wsf.entity.User" select="com.wsf.dao.UserDao.queryById"/>
+        <association column="RPID" property="rp" javaType="com.wsf.entity.Post" select="com.wsf.dao.PostDao.queryById"/>
+        <association column="RPUID" property="rpu" javaType="com.wsf.entity.User" select="com.wsf.dao.UserDao.queryById"/>
+    </resultMap>
+    <select id="queryById" parameterType="long" resultMap="PostResult">
+        SELECT 
+		    PID,
+    		POSTCONTENT,
+    		POSTTIME,
+    		HDID,
+    		CID,
+    		CZID,
+    		RPID,
+    		RPUID,
+    		POSTTYPE,
+    		ZAN,
+    		ISDEL 
+        FROM 
+        	POST 
+		WHERE PID = #{id} 
+    </select>
+    <select id="queryByHdid" resultMap="PostResult">
+        SELECT 
+		    PID,
+    		POSTCONTENT,
+    		POSTTIME,
+    		HDID,
+    		CID,
+    		CZID,
+    		RPID,
+    		RPUID,
+    		POSTTYPE,
+    		ZAN,
+    		ISDEL 
+        FROM 
+        	POST 
+		WHERE HDID = #{hdid} 
+		AND POSTTYPE = 1 
+		AND ISDEL = 1
+		ORDER BY ZAN DESC 
+		LIMIT #{limit},#{offset}    
+    </select>
+    <select id="queryByCid" resultMap="PostResult">
+        SELECT 
+		    PID,
+    		POSTCONTENT,
+    		POSTTIME,
+    		HDID,
+    		CID,
+    		CZID,
+    		RPID,
+    		RPUID,
+    		POSTTYPE,
+    		ZAN,
+    		ISDEL 
+        FROM 
+        	POST 
+		WHERE CID = #{cid} 
+		AND POSTTYPE = 2
+		AND ISDEL = 1
+		ORDER BY ZAN DESC 
+		LIMIT #{limit},#{offset}    
+    </select>
+    <select id="queryByPage" resultMap="PostResult">
+        SELECT 
+		    PID,
+    		POSTCONTENT,
+    		POSTTIME,
+    		HDID,
+    		CID,
+    		CZID,
+    		RPID,
+    		RPUID,
+    		POSTTYPE,
+    		ZAN,
+    		ISDEL 
+        FROM 
+        	POST 
+		<where>
+            <if test="post.postContent!=null and !&quot;&quot;.equals(post.postContent.trim())">
+               AND POSTCONTENT like '%' #{post.postContent} '%'
+            </if>
+            <if test="post.postTime!=null and !&quot;&quot;.equals(post.postTime.trim())">
+               AND POSTTIME = #{post.postTime}
+            </if>
+            <if test="post.hd!=null and post.hd.hdid!=0">
+               AND HDID = #{post.hd.hdid}
+            </if>
+            <if test="post.c!=null and post.c.pid!=0">
+               AND CID = #{post.c.pid}
+            </if>
+            <if test="post.cz!=null and post.cz.uid!=0">
+               AND CZID = #{post.cz.uid}
+            </if>
+            <if test="post.rp!=null and post.rp.uid!=0">
+               AND RPID = #{post.rp.uid}
+            </if>
+            <if test="post.rpu!=null and post.rpu.uid!=0">
+               AND RPUID = #{post.rpu.uid}
+            </if>
+            <if test="post.postType!=0">
+               AND POSTTYPE = #{post.postType}
+            </if>
+            
+            <if test="post.isDel!=0">
+               AND ISDEL = #{post.isDel}
+            </if>
+        </where>
+		ORDER BY ZAN DESC 
+		LIMIT #{limit},#{offset}    
+    </select>
+    <insert id="insert">
+        INSERT INTO POST(
+    		POSTCONTENT,
+    		POSTTIME,
+    		HDID,
+    		<if test="post.c!=null">
+    			CID,
+    		</if>
+    		<if test="post.cz!=null">
+    			CZID,
+    		</if>
+    		<if test="post.rp!=null">
+    			RPID,
+    		</if>
+    		RPUID,
+    		POSTTYPE,
+    		ZAN,
+    		ISDEL) 
+    	VALUES(
+    		#{post.postContent},
+    		#{post.postTime},
+    		#{post.hd.hdid},
+    		<if test="post.c!=null">
+    	    	#{post.c.pid},
+    		</if>
+    		<if test="post.cz!=null">
+    		    #{post.cz.uid},
+    		</if>
+    		<if test="post.rp!=null">
+    		    #{post.rp.uid},
+    		</if>
+    		#{post.rpu.uid},
+    		#{post.postType},
+    		#{post.zan},
+    		#{post.isDel}
+    	)
+    		
+        
+    </insert>
+    <update id="update">
+        UPDATE POST
+        <set>
+            <if test="post.postContent!=null and !&quot;&quot;.equals(post.postContent.trim())">
+                POSTCONTENT = #{post.postContent},
+            </if>
+            <if test="post.postTime!=null and !&quot;&quot;.equals(post.postTime.trim())">
+                POSTTIME = #{post.postTime},
+            </if>
+            <if test="post.hd!=null and post.hd.hdid!=0">
+                HDID = #{post.hd.hdid},
+            </if>
+            <if test="post.c!=null and post.c.pid!=0">
+                CID = #{post.c.pid},
+            </if>
+            <if test="post.cz!=null and post.cz.uid!=0">
+                CZID = #{post.cz.uid},
+            </if>
+            <if test="post.rp!=null and post.rp.uid!=0">
+                RPID = #{post.rp.uid},
+            </if>
+            <if test="post.rpu!=null and post.rpu.uid!=0">
+                RPUID = #{post.rpu.uid},
+            </if>
+            <if test="post.postType!=0">
+                POSTTYPE = #{post.postType},
+            </if>
+            <if test="post!=null">
+                ZAN = #{post.zan},
+            </if>
+            <if test="post.isDel!=0">
+                ISDEL = #{post.isDel},
+            </if>
+        </set>
+        WHERE PID= #{post.pid}
+    </update>
+	<select id="count" parameterType="com.wsf.entity.Post" resultType="long">
+        SELECT
+        	COUNT(*)
+    	FROM 
+        POST
+        <where>
+            <if test="post.postContent!=null and !&quot;&quot;.equals(post.postContent.trim())">
+               OR POSTCONTENT like '%' #{post.postContent} '%'
+            </if>
+            <if test="post.postTime!=null and !&quot;&quot;.equals(post.postTime.trim())">
+               AND POSTTIME = #{post.postTime}
+            </if>
+            <if test="post.hd!=null and post.hd.hdid!=0">
+               AND HDID = #{post.hd.hdid}
+            </if>
+            <if test="post.c!=null and post.c.pid!=0">
+               AND CID = #{post.c.pid}
+            </if>
+            <if test="post.cz!=null and post.cz.uid!=0">
+               AND CZID = #{post.cz.uid}
+            </if>
+            <if test="post.rp!=null and post.rp.uid!=0">
+               AND RPID = #{post.rp.uid}
+            </if>
+            <if test="post.rpu!=null and post.rpu.uid!=0">
+               AND RPUID = #{post.rpu.uid}
+            </if>
+            <if test="post.postType!=0">
+               AND POSTTYPE = #{post.postType}
+            </if>
+            
+            <if test="post.isDel!=0">
+               AND ISDEL = #{post.isDel}
+            </if>
+        </where>
+    </select>
+    <select id="queryByKw" parameterType="java.util.List" resultMap="PostResult">
+        SELECT
+        	PID,
+    		POSTCONTENT,
+    		POST.POSTTIME POSTTIME,
+    		POST.HDID HDID,
+    		CID,
+    		CZID,
+    		RPID,
+    		RPUID,
+    		POSTTYPE,
+    		ZAN,
+    		POST.ISDEL ISDEL 
+    	FROM POST JOIN POSTHEAD HD ON POST.HDID=HD.HDID
+        <where>
+            <foreach collection="list" index="index" item="item" open="((" separator="AND" close=") OR">
+                HD.HEADTITLE like '%' #{item} '%'
+            </foreach>
+            <foreach collection="list" index="index" item="item" open="(" separator="AND" close=") OR">
+                HD.HEADDETAIL like '%' #{item} '%'
+            </foreach>
+            <foreach collection="list" index="index" item="item" open="(" separator="AND" close="))">
+                POST.POSTCONTENT like '%' #{item} '%'
+            </foreach>
+            AND POST.ISDEL=1 AND HD.ISDEL=1
+        </where>
+        
+        LIMIT #{limit},#{offset}
+    </select>
+    <select id="countByKw" parameterType="java.util.List" resultType="long">
+        SELECT
+        	COUNT(*)
+    	FROM POST JOIN POSTHEAD HD ON POST.HDID=HD.HDID
+        <where>
+            <foreach collection="list" index="index" item="item" open="((" separator="AND" close=") OR">
+                HD.HEADTITLE like '%' #{item} '%'
+            </foreach>
+            <foreach collection="list" index="index" item="item" open="(" separator="AND" close=") OR">
+                HD.HEADDETAIL like '%' #{item} '%'
+            </foreach>
+            <foreach collection="list" index="index" item="item" open="(" separator="AND" close="))">
+                POST.POSTCONTENT like '%' #{item} '%'
+            </foreach>
+            AND POST.ISDEL=1 AND HD.ISDEL=1
+        </where>
+        
+    </select>
+</mapper>

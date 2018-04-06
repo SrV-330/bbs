@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wsf.dao.MsgDao">
+    <resultMap type="com.wsf.entity.Msg" id="MsgResult">
+        <id column="MID" jdbcType="INTEGER" property="mid"/>
+        <result column="ISGLANCE" jdbcType="INTEGER" property="isGlance"/>
+        <result column="ISCHECK" jdbcType="INTEGER" property="isCheck"/>
+        <result column="MTIME" jdbcType="VARCHAR" property="mTime"/>
+        <result column="MTYPE" jdbcType="INTEGER" property="mType"/>
+        <association column="FUID" property="fu" javaType="com.wsf.entity.User" select="com.wsf.dao.UserDao.queryById"/>
+        <association column="TUID" property="tu" javaType="com.wsf.entity.User" select="com.wsf.dao.UserDao.queryById"/>
+        <association column="RPHDID" property="rphd" javaType="com.wsf.entity.PostHead" select="com.wsf.dao.PostHeadDao.queryById"/>
+        <association column="RPPID" property="rpp" javaType="com.wsf.entity.Post" select="com.wsf.dao.PostDao.queryById"/>
+    </resultMap>
+    <select id="queryByTuid" parameterType="long" resultMap="MsgResult">
+        SELECT 
+        	MID,
+        	FUID,
+        	TUID,
+        	RPHDID,
+        	RPPID,
+        	MTYPE,
+        	MTIME,
+        	ISGLANCE,
+        	ISCHECK
+        FROM MSG  
+        WHERE TUID=#{id} AND 
+        	MTYPE!=0 
+        ORDER BY MTIME DESC
+    </select>
+    <select id="queryByPage"  resultMap="MsgResult">
+        SELECT 
+        	MID,
+        	FUID,
+        	TUID,
+        	RPHDID,
+        	RPPID,
+        	MTYPE,
+        	MTIME,
+        	ISGLANCE,
+        	ISCHECK
+        FROM MSG 
+        
+        <where>
+            <if test="msg.tu!=null and msg.tu.uid!=0">
+               AND TUID=#{msg.tu.uid}
+            </if>
+            <if test="msg.isGlance!=0">
+               AND ISGLANCE=#{msg.isGlance} 
+            </if>
+            <if test="msg.isCheck!=0">
+               AND ISCHECK=#{msg.isCheck} 
+            </if>
+            AND MTYPE!=0
+        </where>
+        
+        ORDER BY MTIME DESC
+        LIMIT #{limit},#{offset}
+    </select>
+    <insert id="insert" parameterType="com.wsf.entity.Msg">
+        INSERT INTO MSG(
+        	FUID,
+        	TUID,
+        	RPHDID,
+        	RPPID,
+        	MTYPE,
+        	MTIME,
+        	ISGLANCE,
+        	ISCHECK)  
+        VALUES(
+        	#{msg.fu.uid},
+        	#{msg.tu.uid},
+        	#{msg.rphd.hdid},
+        	#{msg.rpp.pid},
+        	#{msg.mType},
+        	#{msg.mTime},
+        	#{msg.isGlance},
+        	#{msg.isCheck}
+        )
+    </insert>
+    <update id="update" parameterType="com.wsf.entity.Msg">
+        UPDATE MSG  
+        	<set>
+        	    <if test="msg.isGlance==1 or msg.isGlance==2">
+        	        ISGLANCE=#{msg.isGlance},
+        	    </if>
+        	    <if test="msg.isCheck==1 or msg.isCheck==2">
+        	        ISCHECK=#{msg.isCheck},
+        	    </if>
+        	</set>
+        	<where>
+        	    <if test="msg.mid!=0">
+        	        AND MID=#{msg.mid}
+        	    </if>
+        	    <if test="msg.tu!=null and msg.tu.uid!=0">
+        	        AND TUID=#{msg.tu.uid}
+        	    </if>
+        	    
+        	</where>
+    </update>
+    <update id="updateByMid" >
+        UPDATE MSG  
+        	<set>
+        	    <if test="msg.isGlance==1 or msg.isGlance==2">
+        	        ISGLANCE=#{msg.isGlance},
+        	    </if>
+        	    <if test="msg.isCheck==1 or msg.isCheck==2">
+        	        ISCHECK=#{msg.isCheck},
+        	    </if>
+        	</set>
+        	<where>
+        	    
+        	    <if test="msg.tu!=null and msg.tu.uid!=0">
+        	        AND TUID=#{msg.tu.uid}
+        	    </if>
+        	    <if test="mids!=null and mids.size()>0">
+        	        AND MID IN
+        	        <foreach item="mid"
+        	             collection="mids" 
+        	            open="(" close=")" separator=",">
+        	            #{mid}
+        	        </foreach>
+        	    </if>
+        	</where>
+    </update>
+    
+    
+</mapper>

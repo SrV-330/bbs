@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wsf.dao.UserDao">
+    
+    <resultMap type="com.wsf.entity.User" id="UserResult">
+        <id column="UID" jdbcType="INTEGER" property="uid"/>
+        <result column="USERNAME" jdbcType="VARCHAR" property="userName"/>
+        <result column="USERTYPE" jdbcType="VARCHAR" property="userType"/>
+        <result column="REGTIME" jdbcType="VARCHAR" property="regTime"/>
+        <result column="ISGAG" jdbcType="INTEGER" property="isGag"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.wsf.entity.User">
+        INSERT INTO USER(
+        	USERNAME,
+        	USERPWD,
+        	USERTYPE,
+        	REGTIME,
+        	ISGAG
+        	)
+        VALUES(
+        	#{user.userName},
+        	#{user.userPwd},
+        	#{user.userType},
+        	#{user.regTime},
+        	#{user.isGag}) 
+        
+    </insert>
+    <select id="queryById" resultMap="UserResult" parameterType="long">
+        SELECT 
+        	UID,
+        	USERNAME,
+        	USERPWD,
+        	USERTYPE,
+        	REGTIME,
+        	ISGAG 
+        FROM USER 
+        WHERE UID = #{id}
+        
+    </select>
+    <select id="queryByName" resultMap="UserResult" parameterType="com.wsf.entity.User">
+        SELECT 
+        	UID,
+        	USERNAME,
+        	USERPWD,
+        	USERTYPE,
+        	REGTIME,
+        	ISGAG 
+        FROM USER 
+        WHERE USERNAME = #{user.userName} 
+    </select>
+    <select id="query" resultMap="UserResult" parameterType="com.wsf.entity.User">
+        SELECT 
+        	UID,
+        	USERNAME,
+        	USERPWD,
+        	USERTYPE,
+        	REGTIME,
+        	ISGAG 
+        FROM USER 
+        <where>
+            <if test="user.uid!=0">
+                AND UID=#{user.uid}
+            </if>
+            <if test="user.userName!=null and !&quot;&quot;.equals(user.userName.trim())">
+                AND USERNAME=#{user.userName}
+            </if>
+            <if test="user.userPwd!=null and !&quot;&quot;.equals(user.userPwd.trim())">
+                AND USERPWD=#{user.userPwd}
+            </if>
+            <if test="user.userType==1 or user.userType==2 or user.userType==3">
+                AND USERTYPE=#{user.userType}
+            </if>
+            <if test="user.regTime!=null and !&quot;&quot;.equals(user.regTime.trim())">
+                AND REGTIME=#{user.regTime}
+            </if>
+            <if test="user.isGag!=0">
+                AND ISGAG=#{user.isGag}
+            </if>
+        </where>
+    </select>
+    <update id="update" parameterType="com.wsf.entity.User" >
+        
+        UPDATE USER 
+        <set >
+            <if test="user.userName!=null and !&quot;&quot;.equals(user.userName.trim())">
+        	    USERNAME = #{user.userName},
+        	</if>
+        	<if test="user.userPwd!=null and !&quot;&quot;.equals(user.userPwd.trim())">
+        	    USERPWD = #{user.userPwd},
+        	</if>
+            <if test="user.userType!=0">
+                USERTYPE = #{user.userType},
+            </if>
+        	<if test="user.isGag!=0">
+        	    ISGAG = #{user.isGag},
+        	</if>
+        </set>	
+        WHERE UID = #{user.uid}
+        
+    </update>
+    
+    <select id="queryByPage" resultMap="UserResult" >
+        SELECT 
+        	UID,
+        	USERNAME,
+        	USERPWD,
+        	USERTYPE,
+        	REGTIME,
+        	ISGAG 
+        FROM USER 
+        <where>
+            <if test="user.uid!=0">
+                AND UID=#{user.uid}
+            </if>
+            <if test="user.userName!=null and !&quot;&quot;.equals(user.userName.trim())">
+                AND USERNAME=#{user.userName}
+            </if>
+            <if test="user.userPwd!=null and !&quot;&quot;.equals(user.userPwd.trim())">
+                AND USERPWD=#{user.userPwd}
+            </if>
+            <if test="user.userType==1 or user.userType==2 or user.userType==3">
+                AND USERTYPE=#{user.userType}
+            </if>
+            <if test="user.regTime!=null and !&quot;&quot;.equals(user.regTime.trim())">
+                AND REGTIME=#{user.regTime}
+            </if>
+            <if test="user.isGag!=0">
+                AND ISGAG=#{user.isGag}
+            </if>
+        </where>
+        LIMIT #{limit},#{offset}
+    </select>
+    <select id="count" resultType="long" parameterType="com.wsf.entity.User">
+        SELECT 
+        	COUNT(*)
+        FROM USER 
+        <where>
+            <if test="user.uid!=0">
+                AND UID=#{user.uid}
+            </if>
+            <if test="user.userName!=null and !&quot;&quot;.equals(user.userName.trim())">
+                AND USERNAME=#{user.userName}
+            </if>
+            <if test="user.userPwd!=null and !&quot;&quot;.equals(user.userPwd.trim())">
+                AND USERPWD=#{user.userPwd}
+            </if>
+            <if test="user.userType==1 or user.userType==2 or user.userType==3">
+                AND USERTYPE=#{user.userType}
+            </if>
+            <if test="user.regTime!=null and !&quot;&quot;.equals(user.regTime.trim())">
+                AND REGTIME=#{user.regTime}
+            </if>
+            <if test="user.isGag!=0">
+                AND ISGAG=#{user.isGag}
+            </if>
+        </where>
+    </select>
+    
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wsf.dao.ZanDao">
+	<resultMap type="com.wsf.entity.Zan" id="ZanResult">
+	    <id column="ZID" jdbcType="INTEGER" property="zid"/>
+	    <result column="ZANTYPE" jdbcType="INTEGER" property="zanType"/>
+	    <association column="ZUID" property="zu" javaType="com.wsf.entity.User" select="com.wsf.dao.UserDao.queryById"/>
+	    <association column="ZPID" property="zp" javaType="com.wsf.entity.Post" select="com.wsf.dao.PostDao.queryById"/>
+	</resultMap>  
+	<select id="query" resultMap="ZanResult">
+	    SELECT 
+	    	ZID,
+	    	ZUID,
+	    	ZPID,
+	    	ZANTYPE
+	    FROM ZAN 
+	    <where>
+	        <if test="zan!=null and zan.zid!=0">
+	            AND ZID=#{zan.zid} 
+	        </if>
+	        <if test="zan!=null and zan.zu!=null and zan.zu.uid!=0">
+	            AND ZUID=#{zan.zu.uid} 
+	        </if>
+	        <if test="zan!=null and zan.zp!=null and zan.zp.pid!=0">
+	            AND ZPID=#{zan.zp.pid}
+	        </if>
+	        <if test="zan.zanType==1 or zan.zanType==-1">
+	            AND ZANTYPE=#{zan.zanType}
+	        </if>
+	    </where>
+	</select> 
+	
+	<select id="queryByPage" resultMap="ZanResult">
+	    SELECT 
+	    	ZID,
+	    	ZUID,
+	    	ZPID,
+	    	ZANTYPE
+	    FROM ZAN 
+	    <where>
+	        <if test="zan!=null and zan.zid!=0">
+	            AND ZID=#{zan.zid} 
+	        </if>
+	        <if test="zan!=null and zan.zu!=null and zan.zu.uid!=0">
+	            AND ZUID=#{zan.zu.uid} 
+	        </if>
+	        <if test="zan!=null and zan.zp!=null and zan.zp.pid!=0">
+	            AND ZPID=#{zan.zp.pid}
+	        </if>
+	        <if test="zan.zanType==1 or zan.zanType==-1">
+	            AND ZANTYPE=#{zan.zanType}
+	        </if>
+	        AND ZANTYPE!=0
+	    </where>
+	    LIMIT #{limit},#{offset}
+	</select> 
+	
+	
+	<select id="queryById" resultMap="ZanResult">
+	    SELECT 
+	    	ZID,
+	    	ZUID,
+	    	ZPID,
+	    	ZANTYPE
+	    FROM ZAN 
+	    WHERE ZID=#{id} AND ZANTYPE!=0
+	</select>     
+	<select id="queryByZuid" resultMap="ZanResult">
+	    SELECT 
+	    	ZID,
+	    	ZUID,
+	    	ZPID,
+	    	ZANTYPE
+	    FROM ZAN 
+	    WHERE ZUID=#{id} AND ZANTYPE!=0
+	</select>
+	<select id="queryByPuid" resultMap="ZanResult">
+	    SELECT 
+	    	ZID,
+	    	ZUID,
+	    	ZPID,
+	    	ZANTYPE
+	    FROM ZAN 
+	    WHERE ZPID=#{id} AND ZANTYPE!=0
+	</select>
+	<insert id="insert" parameterType="com.wsf.entity.Zan">
+	    INSERT INTO ZAN(
+	    	ZUID,
+	    	ZPID,
+	    	ZANTYPE
+	    	)
+	    VALUES(
+	    	#{zan.zu.uid},
+	    	#{zan.zp.pid},
+	    	#{zan.zanType}
+	    )
+	    
+	</insert>
+	<update id="update" parameterType="com.wsf.entity.Zan">
+	    
+	    UPDATE  ZAN
+	    	<set>
+	    	    
+	    	    <if test="zan.zu!=null and zan.zu.uid!=0">
+	    	        ZUID=#{zan.zu.uid},
+	    	    </if>
+	    	    <if test="zan.zp!=null and zan.zp.pid!=0">
+	    	        ZPID=#{zan.zp.pid},
+	    	    </if>
+	    	    <if test="zan.zanType==0 or zan.zanType==1 or zan.zanType==-1">
+	    	        ZANTYPE=#{zan.zanType},
+	    	    </if>
+	    	</set>
+    	<where>
+    	    <if test="zan!=null and (zan.zanType==0 or zan.zanType==1 or zan.zanType==-1)">
+    	        ZID=#{zan.zid}
+    	    </if>
+    	</where>
+   	
+	</update>
+	<select id="count" parameterType="com.wsf.entity.Zan" resultType="long">
+	    SELECT 
+	    	COUNT(*)
+	    FROM ZAN 
+	    <where>
+	        <if test="zan!=null and zan.zid!=0">
+	            AND ZID=#{zan.zid} 
+	        </if>
+	        <if test="zan!=null and zan.zu!=null and zan.zu.uid!=0">
+	            AND ZUID=#{zan.zu.uid} 
+	        </if>
+	        <if test="zan!=null and zan.zp!=null and zan.zp.pid!=0">
+	            AND ZPID=#{zan.zp.pid}
+	        </if>
+	        <if test="zan.zanType==1 or zan.zanType==-1">
+	            AND ZANTYPE=#{zan.zanType}
+	        </if>
+	        AND ZANTYPE!=0
+	    </where>
+	</select>
+</mapper>

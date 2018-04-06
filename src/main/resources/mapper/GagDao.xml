@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wsf.dao.GagDao">
+    <resultMap type="com.wsf.entity.Gag" id="GagResult">
+        <id column="GID" jdbcType="INTEGER" property="gid"/>
+        <result column="STARTTIME" jdbcType="VARCHAR" property="startTime"/>
+        <result column="ENDTIME" jdbcType="VARCHAR" property="endTime"/>
+        <result column="GAGTYPE" jdbcType="INTEGER" property="gagType"/>
+        <result column="GAGRS" jdbcType="INTEGER" property="gagRs"/>
+        <association column="GUID" property="gu" javaType="com.wsf.entity.User" select="com.wsf.dao.UserDao.queryById"/>
+        <association column="OUID" property="ou" javaType="com.wsf.entity.User" select="com.wsf.dao.UserDao.queryById"></association>
+    </resultMap>
+    <select id="query" resultMap="GagResult">
+        SELECT 
+        	GID,
+        	GUID,
+        	OUID,
+        	STARTTIME,
+        	ENDTIME,
+        	GAGTYPE,
+        	GAGRS
+        FROM GAG
+        <where>
+            <if test="gag!=null and gag.gid!=0">
+                AND GID=#{gag.gid}
+            </if>
+            <if test="gag!=null and 
+                gag.gu!=null and 
+                gag.gu.uid!=0">
+                AND GUID=#{gag.gu.uid}
+            </if>
+            <if test="gag!=null and 
+                gag.ou!=null and 
+                gag.ou.uid!=0">
+                AND OUID=#{gag.ou.uid}
+            </if>
+            <if test="gag!=null and gag.startTime!=null and 
+                !&quot;&quot;.equals(gag.startTime.trim())">
+                AND STARTTIME =#{gag.startTime}
+            </if>
+            <if test="gag!=null and gag.endTime!=null and 
+                !&quot;&quot;.equals(gag.endTime.trim())">
+                AND ENDTIME =#{gag.endTime}
+            </if>
+            <if test="gag!=null and gag.gagType!=0">
+                AND GAGTYPE=#{gag.gagType}
+            </if>
+            <if test="gag!=null and gag.gagRs!=0">
+                AND GAGRS=#{gag.gagRs}
+            </if>
+        </where>
+    </select>
+    <select id="queryById" resultMap="GagResult">
+        SELECT 
+        	GID,
+        	GUID,
+        	OUID,
+        	STARTTIME,
+        	ENDTIME,
+        	GAGTYPE,
+        	GAGRS
+        FROM GAG
+        WHERE GID=#{id} AND GAGTYPE!=0
+    </select>
+    <select id="queryTopByGuid" resultMap="GagResult">
+        SELECT 
+        	GID,
+        	GUID,
+        	OUID,
+        	STARTTIME,
+        	ENDTIME,
+        	GAGTYPE,
+        	GAGRS
+        FROM GAG
+        WHERE GUID=#{id} AND GAGTYPE=2
+        ORDER BY STARTTIME DESC 
+        LIMIT #{limit},#{offset}
+    </select>
+    <select id="queryByGuid" resultMap="GagResult">
+        SELECT 
+        	GID,
+        	GUID,
+        	OUID,
+        	STARTTIME,
+        	ENDTIME,
+        	GAGTYPE,
+        	GAGRS
+        FROM GAG
+        WHERE GUID=#{id} AND GAGTYPE!=0
+    </select>
+    <select id="queryByOuid" resultMap="GagResult">
+        SELECT 
+        	GID,
+        	GUID,
+        	OUID,
+        	STARTTIME,
+        	ENDTIME,
+        	GAGTYPE,
+        	GAGRS
+        FROM GAG
+        WHERE OUID=#{id} AND GAGTYPE!=0 
+        ORDER BY STARTTIME DESC
+    </select>
+    <insert id="insert" parameterType="com.wsf.entity.Gag">
+        INSERT INTO GAG(
+        	GUID,
+        	OUID,
+        	STARTTIME,
+        	ENDTIME,
+        	GAGTYPE,
+        	GAGRS
+        )VALUES(
+        	#{gag.gu.uid},
+        	#{gag.ou.uid},
+        	#{gag.startTime},
+        	#{gag.endTime},
+        	#{gag.gagType},
+        	#{gag.gagRs}
+        )
+        	
+    </insert>
+    <update id="update" parameterType="com.wsf.entity.Gag">
+        UPDATE GAG
+        <set>
+            <if test="gag.gu!=null and gag.gu.uid!=0">
+                GUID=#{gag.gu.uid},
+            </if>
+            <if test="gag.ou!=null and gag.ou.uid!=0">
+                OUID=#{gag.ou.uid},
+            </if>
+            <if test="gag.startTime!=null and &quot;&quot;.equals(gag.startTime.trim())
+                 and gag.endTime!=null and &quot;&quot;.equals(gag.endTime.trim())">
+                STARTTIME=#{gag.startTime},
+                ENDTIME=#{gag.endTime},
+            </if>
+            <if test="gag.gagType!=0">
+                GAGTYPE=#{gag.gagType},
+            </if>
+            <if test="gag.gagRs!=0">
+                GAGRS=#{gag.gagRs},
+            </if>
+        </set>
+       WHERE GID=#{gag.gid}
+    </update>
+    
+    <select id="queryByPage" resultMap="GagResult">
+        SELECT 
+        	GID,
+        	GUID,
+        	OUID,
+        	STARTTIME,
+        	ENDTIME,
+        	GAGTYPE,
+        	GAGRS
+        FROM GAG
+        <where>
+            <if test="gag!=null and gag.gid!=0">
+                AND GID=#{gag.gid}
+            </if>
+            <if test="gag!=null and 
+                gag.gu!=null and 
+                gag.gu.uid!=0">
+                AND GUID=#{gag.gu.uid}
+            </if>
+            <if test="gag!=null and 
+                gag.ou!=null and 
+                gag.ou.uid!=0">
+                AND OUID=#{gag.ou.uid}
+            </if>
+            <if test="gag!=null and gag.startTime!=null and 
+                !&quot;&quot;.equals(gag.startTime.trim())">
+                AND STARTTIME =#{gag.startTime}
+            </if>
+            <if test="gag!=null and gag.endTime!=null and 
+                !&quot;&quot;.equals(gag.endTime.trim())">
+                AND ENDTIME =#{gag.endTime}
+            </if>
+            <if test="gag!=null and gag.gagType!=0">
+                AND GAGTYPE=#{gag.gagType}
+            </if>
+            <if test="gag!=null and gag.gagRs!=0">
+                AND GAGRS=#{gag.gagRs}
+            </if>
+        </where>
+        
+        LIMIT #{limit},#{offset}
+    </select>
+    <select id="count" parameterType="com.wsf.entity.Gag" resultType="long">
+        SELECT 
+        	COUNT(*)
+        FROM GAG
+        <where>
+            <if test="gag!=null and gag.gid!=0">
+                AND GID=#{gag.gid}
+            </if>
+            <if test="gag!=null and 
+                gag.gu!=null and 
+                gag.gu.uid!=0">
+                AND GUID=#{gag.gu.uid}
+            </if>
+            <if test="gag!=null and 
+                gag.ou!=null and 
+                gag.ou.uid!=0">
+                AND OUID=#{gag.ou.uid}
+            </if>
+            <if test="gag!=null and gag.startTime!=null and 
+                !&quot;&quot;.equals(gag.startTime.trim())">
+                AND STARTTIME =#{gag.startTime}
+            </if>
+            <if test="gag!=null and gag.endTime!=null and 
+                !&quot;&quot;.equals(gag.endTime.trim())">
+                AND ENDTIME =#{gag.endTime}
+            </if>
+            <if test="gag!=null and gag.gagType!=0">
+                AND GAGTYPE=#{gag.gagType}
+            </if>
+            <if test="gag!=null and gag.gagRs!=0">
+                AND GAGRS=#{gag.gagRs}
+            </if>
+        </where>
+    </select>
+    
+    
+    
+</mapper>
